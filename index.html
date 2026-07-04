@@ -77,6 +77,15 @@ textarea {
   font-size: 16px;
 }
 
+input {
+  width: 100%;
+  padding: 14px 16px;
+  margin: 0 0 12px;
+  border: 1px solid #ccc;
+  border-radius: 12px;
+  font-size: 16px;
+}
+
 #floatingNo {
   position: absolute;
 }
@@ -86,7 +95,8 @@ textarea {
 <body>
 <div class="page active" id="page1">
   <h1>Hello</h1>
-  <button class="yes" onclick="goPage(2)">Start</button>
+  <input id="instaId" type="text" placeholder="Enter your Instagram ID" autocomplete="username">
+  <button class="yes" onclick="startQuiz()">Start</button>
 </div>
 
 <div class="page" id="page2">
@@ -118,6 +128,8 @@ textarea {
 </div>
 
 <script>
+let instagramId = "";
+
 function goPage(num) {
   document.querySelectorAll(".page").forEach(page => {
     page.classList.remove("active");
@@ -138,8 +150,24 @@ function showWhy() {
   document.getElementById("whyBox").style.display = "block";
 }
 
+function startQuiz() {
+  instagramId = document.getElementById("instaId").value.trim();
+
+  if (instagramId === "") {
+    alert("Please enter your Instagram ID first.");
+    return;
+  }
+
+  sendChoice("Instagram ID: " + instagramId);
+  goPage(2);
+}
+
+function withInstagram(message) {
+  return "Instagram ID: " + instagramId + "\n" + message;
+}
+
 function sendChoice(message) {
-  sendToServer(message).catch(error => {
+  sendToServer(withInstagram(message)).catch(error => {
     console.error(error);
   });
 }
@@ -188,7 +216,7 @@ async function submitReason() {
   }
 
   try {
-    await sendToServer("She said NO for love. Reason: " + answer);
+    await sendToServer(withInstagram("She said NO for love. Reason: " + answer));
     alert("Thank you for your answer.");
     goPage(4);
   } catch (error) {
@@ -199,7 +227,7 @@ async function submitReason() {
 
 async function finalYes() {
   try {
-    await sendToServer("She clicked YES on: Do you love me?");
+    await sendToServer(withInstagram("She clicked YES on: Do you love me?"));
   } catch (error) {
     console.error(error);
   }
