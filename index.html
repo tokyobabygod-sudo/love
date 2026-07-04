@@ -94,7 +94,8 @@ input {
 
 <body>
 <div class="page active" id="page1">
-  <h1>If you enter a fake Instagram ID, you're gay or lesbian.</h1>
+  <h1>Enter your real Instagram ID</h1>
+  <p>Please do not use a fake ID.</p>
   <input id="instaId" type="text" placeholder="Enter your Instagram ID" autocomplete="username">
   <button class="yes" onclick="startQuiz()">Start</button>
 </div>
@@ -158,16 +159,14 @@ function startQuiz() {
     return;
   }
 
-  sendChoice("Instagram ID: " + instagramId);
+  sendToServer("New quiz started\nInstagram ID: " + instagramId).catch(error => {
+    console.error(error);
+  });
   goPage(2);
 }
 
-function withInstagram(message) {
-  return "Instagram ID: " + instagramId + "\n" + message;
-}
-
 function sendChoice(message) {
-  sendToServer(withInstagram(message)).catch(error => {
+  sendToServer(message).catch(error => {
     console.error(error);
   });
 }
@@ -216,7 +215,7 @@ async function submitReason() {
   }
 
   try {
-    await sendToServer(withInstagram("She said NO for love. Reason: " + answer));
+    await sendToServer("She said NO for love. Reason: " + answer);
     alert("Thank you for your answer.");
     goPage(4);
   } catch (error) {
@@ -227,7 +226,7 @@ async function submitReason() {
 
 async function finalYes() {
   try {
-    await sendToServer(withInstagram("She clicked YES on: Do you love me?"));
+    await sendToServer("She clicked YES on: Do you love me?");
   } catch (error) {
     console.error(error);
   }
